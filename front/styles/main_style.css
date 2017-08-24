@@ -14,11 +14,11 @@ body {
     width: 450px;
     
     margin: auto;
-    padding: 25% 0;
+    padding: 20% 0;
 }
+
 .login-container div {
-    width: 60%;
-    height: 50%;
+    width: 50%;
 
     margin: auto;
 }
