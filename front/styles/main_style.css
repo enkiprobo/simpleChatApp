@@ -1,0 +1,24 @@
+body {
+    margin: 0;
+}
+
+.header {
+    margin: 0;
+}
+
+.enki-header {
+    margin: 0;
+}
+
+.login-container {
+    width: 450px;
+    
+    margin: auto;
+    padding: 25% 0;
+}
+.login-container div {
+    width: 60%;
+    height: 50%;
+
+    margin: auto;
+}
