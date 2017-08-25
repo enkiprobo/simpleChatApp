@@ -1,13 +1,42 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Simple Chat - Login</title>
+        <title>Simple Chat - Main</title>
+        
+        <link rel="stylesheet" href="front/styles/main_style.css">
     </head>
     <body>
-        <div class='app-container'>
-            <div class='chat-header'>
-                
+        <div class="app-container">
+            <div class="header">
+                <h1 class="enki-header"> Simple Chat - NQapp </h1>
             </div>
-        </div>  
+            <div class="chat-app-container">
+                <div class="chat-header">
+                    <select class="chat-friend">
+                        
+                    </select>
+    
+                    <button type="submit"> Logout </button>
+                </div>
+                <div class="chat-content">
+                    <div class="own-chat">
+                        <p class="date">tanggal</p>
+                        <p class="message">message</p>
+                    </div>
+                    <div class="other-chat">
+                        <p class="message">message</p>
+                        <p class="date">tanggal</p>
+                    </div>
+                </div>
+                <div class="chat-action">
+                    <input type="text" name="chat-message">
+                    <button type="submit"> Send </button>
+
+                    <p></p>
+                </div>
+            </div>
+        </div> 
+        
+        <script src="front/scripts/main_chat.js"></script>
     </body>
 </html>

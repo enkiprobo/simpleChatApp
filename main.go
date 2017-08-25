@@ -9,6 +9,7 @@ import (
 
 func main() {
 	err := database.InitDB()
+	defer database.ChatDB.Close()
 
 	if err != nil {
 		log.Println(err.Error())
@@ -19,7 +20,11 @@ func main() {
 	http.Handle("/front/", http.StripPrefix("/front/", http.FileServer(http.Dir("front"))))
 
 	// ajax handler
-	http.HandleFunc("/login", handler.LoginAuth)
+	http.HandleFunc("/loginusername", handler.LoginAuthUser)
+	http.HandleFunc("/loginpassword", handler.LoginAuthPass)
+	http.HandleFunc("/getchatfriends", handler.GetChatFriends)
+	http.HandleFunc("/getchatdetail", handler.GetChatDetail)
+	http.HandleFunc("/insertmessage", handler.InsertMessage)
 
 	// html render handler
 	http.HandleFunc("/", handler.MainSimpleChatApp)
