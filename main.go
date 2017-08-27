@@ -16,6 +16,9 @@ func main() {
 		return
 	}
 
+	handler.Hubnya = handler.NewHub()
+	go handler.Hubnya.Run()
+
 	// frontend resource
 	http.Handle("/front/", http.StripPrefix("/front/", http.FileServer(http.Dir("front"))))
 
@@ -25,6 +28,9 @@ func main() {
 	http.HandleFunc("/getchatfriends", handler.GetChatFriends)
 	http.HandleFunc("/getchatdetail", handler.GetChatDetail)
 	http.HandleFunc("/insertmessage", handler.InsertMessage)
+
+	// websocket
+	http.HandleFunc("/livechat", handler.LiveChatHandler)
 
 	// html render handler
 	http.HandleFunc("/", handler.MainSimpleChatApp)

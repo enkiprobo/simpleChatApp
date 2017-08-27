@@ -17,6 +17,8 @@ function getcookiekeyvalue(){
 function getuserfromcookie(cn) {
     let cookiekeyvalue = getcookiekeyvalue();
     
+    console.log(cookiekeyvalue);
+
     let username = '';
     cookiekeyvalue.forEach(function(element, index) {
         if (element.key == cn) {
@@ -24,6 +26,7 @@ function getuserfromcookie(cn) {
         }
     });
 
+    console.log(username);
     return username;
 }
 // get selected friend
@@ -78,12 +81,38 @@ const chatfriendc = document.getElementsByClassName('chat-friend')[0];
 const chatheaderc = document.getElementsByClassName('chat-header')[0];
 const chatcontentc = document.getElementsByClassName('chat-content')[0];
 const chatactionc = document.getElementsByClassName('chat-action')[0];
+const userloginnow = getuserfromcookie('username');
+
+console.log("userloginnow");
+/* WEBSOCKET */
+var ws = new WebSocket('ws://10.20.33.100:8080/livechat');
+/*
+    {
+        message_owner:,
+        message:,
+        message_date:
+    }
+*/
+ws.onmessage = function(event) {    
+    let md = JSON.parse(event.data);
+    let friend = getselectedfriend();
+
+    console.log(md);
+
+    if (md.message_owner == friend) {
+        let messagedate = md.message_date;
+        let messageHTML = insertmessageHTML(md.message, md.message_owner, messagedate);
+
+        chatcontentc.appendChild(messageHTML);
+    }
+};
 
 /* MAIN FUNCTION */
 const logout = function(){
     // deleting username cookie using past date as expire date
     document.cookie = 'username=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 
+    ws.close();
     document.location = '/';
 };
 const getchatfriend = function(resolve, reject) {
@@ -128,8 +157,17 @@ const sendmessage = function(){
             if (response.chat_detail_id != 0) {
                 chatactionc.getElementsByTagName('input')[0].value = '';
 
-                let messageHTML = insertmessageHTML(message, getuserfromcookie('username'), gettimeonlyhourandminutenow())
+                let hourminute = gettimeonlyhourandminutenow();
+                let messageHTML = insertmessageHTML(message, userloginnow, hourminute);
+
                 chatcontentc.appendChild(messageHTML);
+
+                let messagesocket = {
+                    message_owner: userloginnow,
+                    message: message,
+                    message_date: hourminute 
+                };
+                ws.send(JSON.stringify(messagesocket));
             }
         }
     };

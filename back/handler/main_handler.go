@@ -10,6 +10,12 @@ import (
 	"topsusmoprog/tugassatu/back/model"
 )
 
+func LiveChatHandler(w http.ResponseWriter, r *http.Request) {
+
+	serveWs(Hubnya, w, r)
+	return
+}
+
 func InsertMessage(w http.ResponseWriter, r *http.Request) {
 	unCookie, err := r.Cookie("username")
 	if err != nil {
