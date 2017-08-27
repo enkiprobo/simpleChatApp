@@ -26,6 +26,52 @@ function getuserfromcookie(cn) {
 
     return username;
 }
+// get selected friend
+function getselectedfriend(){
+    let selected = chatfriendc.selectedIndex;
+    let friend = chatfriendc.options[selected].text;
+
+    return friend;
+}
+// get only hour and minute from timestamp
+function gettimeonlyhourandminute(datetime){
+    let dateandtime = datetime.split('T');
+
+    return dateandtime[1].substring(0, dateandtime[1].length - 4);
+}
+// get time now only hour and minute from date.now
+function gettimeonlyhourandminutenow(){
+    let now = new Date();
+
+    return now.getHours() + ':' + now.getMinutes();
+}
+// insert new message html
+function insertmessageHTML(messagecontentstr, message_author, messagedatestr){
+    let friend = getselectedfriend();
+
+    let message = document.createElement('div');
+    let messagecontent = document.createElement('p');
+    let messagedate = document.createElement('p');
+    
+    messagecontent.setAttribute('class', 'message');
+    messagecontent.innerHTML = messagecontentstr;
+    messagedate.setAttribute('class', 'date');
+    messagedate.innerHTML = messagedatestr;
+
+    if (message_author == friend) {
+        message.setAttribute('class', 'other-chat');
+
+        message.appendChild(messagecontent);
+        message.appendChild(messagedate);
+    } else {
+        message.setAttribute('class', 'own-chat');
+    
+        message.appendChild(messagedate);
+        message.appendChild(messagecontent);
+    }
+
+    return message;
+}
 
 /* GET USEFUL TAG */
 const chatfriendc = document.getElementsByClassName('chat-friend')[0];
@@ -40,7 +86,7 @@ const logout = function(){
 
     document.location = '/';
 };
-const getchatfriend = function() {
+const getchatfriend = function(resolve, reject) {
     
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -54,6 +100,8 @@ const getchatfriend = function() {
 
                 chatfriendc.appendChild(chatfriend);
             });
+
+            resolve(); // for promise
         }
     };
 
@@ -70,10 +118,7 @@ const sendmessage = function(){
         return
     }
 
-    let selected = chatfriendc.selectedIndex;
-    let friend = chatfriendc.options[selected].text;
-
-    console.log(friend);
+    let friend = getselectedfriend();
 
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -81,19 +126,50 @@ const sendmessage = function(){
             let response = JSON.parse(this.responseText)
 
             if (response.chat_detail_id != 0) {
-                console.log(message);
+                chatactionc.getElementsByTagName('input')[0].value = '';
+
+                let messageHTML = insertmessageHTML(message, getuserfromcookie('username'), gettimeonlyhourandminutenow())
+                chatcontentc.appendChild(messageHTML);
             }
         }
-    }
+    };
 
     xhttp.open('GET', '/insertmessage?friend='+friend+'&message='+message);
     xhttp.send();
-}
+};
+const getsetchatdetail = function() {
+
+    let friend = getselectedfriend();
+
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200){
+            let response = JSON.parse(this.responseText);
+
+            response.forEach(function(m) {
+                let message = insertmessageHTML(m.message, m.message_author, gettimeonlyhourandminute(m.create_date));
+                chatcontentc.appendChild(message);
+            });
+        }
+    };
+
+    xhttp.open('GET', '/getchatdetail?friend='+friend);
+    xhttp.send();
+};
+const selectchatfriend = function() {
+
+    chatcontentc.innerHTML = '';
+
+    getsetchatdetail();
+};
 
 /* SET EVENT LISTENER */
 chatheaderc.getElementsByTagName('button')[0].addEventListener('click', logout);
 chatactionc.getElementsByTagName('button')[0].addEventListener('click', sendmessage);
+chatfriendc.addEventListener('change', selectchatfriend);
 
+/* MAIN */
 window.onload = function(){
-    getchatfriend();
+    let order = new Promise(getchatfriend)
+        .then(() => selectchatfriend());
 }

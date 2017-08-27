@@ -33,7 +33,7 @@ const (
 			cd_id,
 			message,
 			username,
-			chat_create_date
+			create_time
 		FROM 
 			chat_detail
 				INNER JOIN 
@@ -43,7 +43,7 @@ const (
 		WHERE
 			chatroom = ?
 		ORDER BY
-			chat_create_date
+			create_time 
 	`
 	getChatRoomQuery string = `
 		SELECT
@@ -73,7 +73,7 @@ type (
 		ID         int    `json:"chat_id"`
 		Username   string `json:"message_author"`
 		Message    string `json:"message"`
-		ChatCreate string `json:"chat_create_date"`
+		ChatCreate string `json:"create_date"`
 	}
 )
 
@@ -163,4 +163,24 @@ func InsertChat(message string, chatroom, userid1 int) (int64, error) {
 	}
 
 	return chatDetailID, nil
+}
+
+func GetChatDetail(chatroom int) ([]ChatDetail, error) {
+
+	chatDetails := []ChatDetail{}
+
+	rows, err := ChatDB.Query(getChatDetailQuery, chatroom)
+	if err != nil {
+		return chatDetails, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var chatDetail ChatDetail
+		rows.Scan(&chatDetail.ID, &chatDetail.Message, &chatDetail.Username, &chatDetail.ChatCreate)
+
+		chatDetails = append(chatDetails, chatDetail)
+	}
+
+	return chatDetails, nil
 }

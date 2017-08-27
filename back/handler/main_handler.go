@@ -60,6 +60,50 @@ func InsertMessage(w http.ResponseWriter, r *http.Request) {
 
 func GetChatDetail(w http.ResponseWriter, r *http.Request) {
 
+	unCookie, err := r.Cookie("username")
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusNonAuthoritativeInfo)
+		return
+	}
+
+	userLogin, err := database.GetUser(unCookie.Value)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	friend := r.FormValue("friend")
+	user2, err := database.GetUser(friend)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	chatroom := database.GetChatRoom(userLogin.ID, user2.ID)
+	if chatroom == 0 {
+		log.Println("chat room not exist")
+		http.Error(w, "chat room not exist", http.StatusNotAcceptable)
+		return
+	}
+
+	chatDetail, err := database.GetChatDetail(chatroom)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	response, err := json.Marshal(chatDetail)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(response)
 }
 
 func GetChatFriends(w http.ResponseWriter, r *http.Request) {
