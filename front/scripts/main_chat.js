@@ -81,11 +81,13 @@ const chatfriendc = document.getElementsByClassName('chat-friend')[0];
 const chatheaderc = document.getElementsByClassName('chat-header')[0];
 const chatcontentc = document.getElementsByClassName('chat-content')[0];
 const chatactionc = document.getElementsByClassName('chat-action')[0];
-const userloginnow = getuserfromcookie('username');
 
-console.log("userloginnow");
+/* GET USEFUL CONST */
+const userloginnow = getuserfromcookie('username');
+const origin = document.location.host;
+
 /* WEBSOCKET */
-var ws = new WebSocket('ws://10.20.33.100:8080/livechat');
+var ws = new WebSocket('ws://'+origin+'/livechat');
 /*
     {
         message_owner:,
@@ -168,6 +170,8 @@ const sendmessage = function(){
                     message_date: hourminute 
                 };
                 ws.send(JSON.stringify(messagesocket));
+
+                chatcontentc.scrollTop = chatcontentc.scrollHeight;
             }
         }
     };
@@ -188,6 +192,8 @@ const getsetchatdetail = function() {
                 let message = insertmessageHTML(m.message, m.message_author, gettimeonlyhourandminute(m.create_date));
                 chatcontentc.appendChild(message);
             });
+
+            chatcontentc.scrollTop = chatcontentc.scrollHeight;
         }
     };
 

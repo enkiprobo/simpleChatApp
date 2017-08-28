@@ -1,5 +1,7 @@
 const loginusernamec = document.getElementsByClassName('login-username-container')[0];
 const loginpasswordc = document.getElementsByClassName('login-password-container')[0];
+
+const notepassword = document.getElementsByClassName('login-password-container')[0].getElementsByTagName('p')[1];
 var username;
 
 const authusername = function(){
@@ -18,6 +20,8 @@ const authusername = function(){
 
                 loginpasswordc.setAttribute('style', 'display: block');
             }
+
+            notepassword.innerHTML = 'input this password "'+username+'12"';
         }
     };
 
@@ -27,7 +31,7 @@ const authusername = function(){
 
 const authpassword = function() {
     let password = loginpasswordc.getElementsByTagName('input')[0].value;
-
+    
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status==200){
