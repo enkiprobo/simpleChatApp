@@ -3,11 +3,17 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"topsusmoprog/tugassatu/back/handler"
 	"topsusmoprog/tugassatu/back/model"
 )
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatalln("no port error")
+	}
+
 	err := database.InitDB()
 	defer database.ChatDB.Close()
 
@@ -35,5 +41,5 @@ func main() {
 	// html render handler
 	http.HandleFunc("/", handler.MainSimpleChatApp)
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":"+port, nil)
 }
