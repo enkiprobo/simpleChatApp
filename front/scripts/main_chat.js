@@ -87,7 +87,7 @@ const userloginnow = getuserfromcookie('username');
 const origin = document.location.host;
 
 /* WEBSOCKET */
-var ws = new WebSocket('ws://'+origin+'/livechat');
+var ws = new WebSocket('wss://'+origin+'/livechat');
 /*
     {
         message_owner:,
